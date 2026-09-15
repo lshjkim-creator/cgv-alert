@@ -1,7 +1,7 @@
 import os
+import time
 import requests
 
-# GitHub Secrets에서 환경 변수로 가져오기
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
@@ -11,10 +11,12 @@ def send_telegram(message):
         "chat_id": CHAT_ID,
         "text": message
     }
-    requests.post(url, data=payload)
+    try:
+        requests.post(url, data=payload)
+    except Exception as e:
+        print(f"텔레그램 발송 실패: {e}")
 
 def check_cgv():
-    # CGV 용산아이파크몰(0013) 스케줄 조회 URL
     url = "https://www.cgv.co.kr/common/showtimes/iframeTheater.aspx"
     params = {
         "areacode": "01",
@@ -30,7 +32,6 @@ def check_cgv():
         response = requests.get(url, params=params, headers=headers)
         html = response.text
 
-        # 영화명 존재 여부 확인 (극장판 치이카와: 인어섬의 비밀)
         target_movie = "치이카와"
         
         if target_movie in html:
@@ -42,11 +43,23 @@ def check_cgv():
             )
             send_telegram(msg)
             print("예매 오픈 감지: 텔레그램 알림 발송 완료")
+            return True
         else:
-            print("아직 예매가 오픈되지 않았습니다.")
+            print("아직 예매 미오픈...")
+            return False
 
     except Exception as e:
         print(f"오류 발생: {e}")
+        return False
+
+if __name__ == "__main__":
+    # GitHub Actions 한 번 실행 시 최대 30분 동안 1분마다 반복
+    for i in range(30):
+        print(f"[{i+1}/30] CGV 예매 여부 확인 중...")
+        is_open = check_cgv()
+        if is_open:
+            break
+        time.sleep(60) # 60초(1분) 대기
 
 if __name__ == "__main__":
     check_cgv()

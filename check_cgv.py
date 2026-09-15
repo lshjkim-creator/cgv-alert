@@ -14,11 +14,11 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def check_cgv():
-    # CGV 홍대(0013) 스케줄 조회 URL
+    # CGV 용산아이파크몰(0013) 스케줄 조회 URL
     url = "https://www.cgv.co.kr/common/showtimes/iframeTheater.aspx"
     params = {
         "areacode": "01",
-        "theaterCode": "0013", # 홍대
+        "theaterCode": "0013", # 용산아이파크몰
         "date": "20260919"      # 9월 19일
     }
     
@@ -36,7 +36,7 @@ def check_cgv():
         if target_movie in html:
             msg = (
                 "🚨 치이카와 예매 오픈!\n\n"
-                "CGV 홍대\n"
+                "CGV 용산아이파크몰\n"
                 "9/19 상영 회차가 확인되었습니다.\n\n"
                 "지금 예매하세요!"
             )

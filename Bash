@@ -1,0 +1,1 @@
+mkdir -p .github/workflows && touch .github/workflows/check.yml
